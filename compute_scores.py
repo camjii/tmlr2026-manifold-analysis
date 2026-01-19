@@ -250,7 +250,7 @@ class ScoreRunner(Runner):
         if shuffle:
             random.shuffle(full_argsets)
 
-        for args in full_argsets:
+        for args in tqdm(full_argsets, desc="Completed experiments", total=len(full_argsets)):
             if self.results_exist(args):
                 print(f"Skipping existing experiment: {args}")
                 continue
