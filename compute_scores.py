@@ -1,6 +1,7 @@
 import argparse
 import os
 import random
+import sys
 
 import numpy as np
 import pandas as pd
@@ -8,7 +9,8 @@ from sklearn.cross_decomposition import PLSRegression
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.manifold import TSNE, Isomap
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, cross_validate
+from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import Normalizer
 from sklearn.utils import resample
 from tqdm import tqdm
@@ -20,6 +22,9 @@ from shape_happens.utils import ActivationDataset, SupervisedMDS
 def process_layer(args):
     (control, layer, label_col, target_col, activations, labels, reduction_method, n_components,
      manifold, k, repetitions, preprocess_func, global_metadata) = args
+    
+    # Hack to detect if we are debugging to avoid multiprocessing issues
+    is_debugging = 'debugpy' in sys.modules or 'pydevd' in sys.modules
     
     if repetitions == 0:
         print("Repetitions is set to 0, initiating bootstrap mode...")
@@ -53,34 +58,34 @@ def process_layer(args):
         indices = np.arange(len(labels))
         for i in range(repetitions):
             if bootstrap:
-                    splits = []
-                    for b in range(k):
-                        train_idx = resample(indices, replace=True, n_samples=len(labels), random_state=i * k + b)
-                        test_idx = np.array(list(set(np.indices) - set(train_idx)))
-                        splits.append((train_idx, test_idx))
+                cv_splits = []
+                for b in range(k):
+                    train_idx = resample(indices, replace=True, n_samples=len(labels), random_state=i * k + b)
+                    test_idx = np.array(list(set(indices) - set(train_idx)))
+                    cv_splits.append((train_idx, test_idx))
             else:
-                kf = KFold(n_splits=k, random_state=i, shuffle=True)
-                splits = kf.split(activations)
+                cv_splits = KFold(n_splits=k, random_state=i, shuffle=True)
 
-            fold_scores = []
-            for train_index, test_index in splits:
-                train_acts = activations[train_index, layer]
-                test_acts = activations[test_index, layer]
-                train_labels = labels[train_index]
-                test_labels = labels[test_index]
+            steps = []
+            if reduction_method == 'PCA':
+                steps.append(('norm', norm))
+                steps.append(('pca', rmodel))
+            else:
+                steps.append(('model', rmodel))
+            
+            pipeline = Pipeline(steps)
 
-                if reduction_method == 'PCA':
-                    train_acts = norm.fit_transform(train_acts)
-                    test_acts = norm.transform(test_acts)
+            cv_results = cross_validate(
+                pipeline, 
+                activations[:, layer], 
+                labels, 
+                cv=cv_splits, 
+                n_jobs=-1 if not is_debugging else 1, # Use all available cores
+                scoring=None,
+            )
 
-                rmodel.fit(train_acts, train_labels)
-                reduced_test = rmodel.transform(test_acts)
-
-                if reduction_method == 'LDA' and reduced_test.shape[1] <= 1:
-                    return None  # Skip collinear case
-
-                fold_scores.append(rmodel.score(test_acts, test_labels))
-
+            fold_scores = cv_results['test_score'].tolist()
+            
             rep_results.append({
                 'preprocess_func': preprocess_func,
                 'n_samples': len(labels),
