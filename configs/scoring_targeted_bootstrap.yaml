@@ -1,6 +1,6 @@
 global:
   reduction_method: SMDS
-  k: 100
+  k: 200
   repetitions: 0
   target_columns: last_prompt_token
   layers: null
