@@ -107,23 +107,7 @@ def process_layer(args):
         return rep_results  
 
     except Exception as e:
-        print(f"Error in layer {layer}, target_col {target_col}: {e}")
-        return {
-            'preprocess_func': preprocess_func,
-            'n_components': n_components,
-            'k': k,
-            'repetition_id': i,
-            'manifold': manifold,
-            'layer': layer,
-            'target_col': target_col,
-            'reduction_method': reduction_method,
-            'score': None,
-            'fold_scores': None,
-            'label_col': label_col,
-            'control': control,
-            'error': str(e),
-            **global_metadata
-        }
+        raise RuntimeError(f"Error in {args} (layer {layer}, target_col {target_col}: {e})")
 
 
 class ScoreRunner(Runner):
