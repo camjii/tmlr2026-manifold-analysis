@@ -13,6 +13,7 @@ from scipy.optimize import minimize
 from sklearn.base import BaseEstimator, TransformerMixin
 from tqdm import tqdm
 from transformers import AutoTokenizer, LogitsProcessor, LogitsProcessorList
+from scipy.spatial.distance import cdist
 
 
 def prompt_ollama(prompt, model="llama3.1:latest", api_url="http://10.167.31.201:11434/api/generate"):
@@ -320,8 +321,8 @@ class SupervisedMDS(BaseEstimator, TransformerMixin):
         if self.manifold in ['trivial', 'cluster']:  # Retrocompatibility
             D = (y[:, None] != y[None, :]).astype(float)
         elif self.manifold in ['euclidean', 'linear']:
-            diff = y[None,:, None] - y[None, None, :]
-            D = np.linalg.norm(diff, axis=0)
+            y_input = y[:, np.newaxis] if y.ndim == 1 else y
+            D = cdist(y_input, y_input, metric='euclidean')
         elif self.manifold == 'log_linear':
             log_y = np.log(y + 1)
             D = np.abs(log_y[:, None] - log_y[None, :])
