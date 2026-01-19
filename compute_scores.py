@@ -10,6 +10,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.manifold import TSNE, Isomap
 from sklearn.model_selection import KFold
 from sklearn.preprocessing import Normalizer
+from sklearn.utils import resample
 from tqdm import tqdm
 
 from shape_happens import Runner
@@ -20,6 +21,13 @@ def process_layer(args):
     (control, layer, label_col, target_col, activations, labels, reduction_method, n_components,
      manifold, k, repetitions, preprocess_func, global_metadata) = args
     
+    if repetitions == 0:
+        print("Repetitions is set to 0, initiating bootstrap mode...")
+        repetitions = 1
+        bootstrap = True
+    else:
+        bootstrap = False
+
     if preprocess_func is not None and isinstance(preprocess_func, list) and len(preprocess_func) == 1:
         preprocess_func = preprocess_func[0]
     
@@ -42,11 +50,20 @@ def process_layer(args):
 
     try:
         rep_results = []
+        indices = np.arange(len(labels))
         for i in range(repetitions):
-            kf = KFold(n_splits=k, random_state=i, shuffle=True)
-            fold_scores = []
+            if bootstrap:
+                    splits = []
+                    for b in range(k):
+                        train_idx = resample(indices, replace=True, n_samples=len(labels), random_state=i * k + b)
+                        test_idx = np.array(list(set(np.indices) - set(train_idx)))
+                        splits.append((train_idx, test_idx))
+            else:
+                kf = KFold(n_splits=k, random_state=i, shuffle=True)
+                splits = kf.split(activations)
 
-            for train_index, test_index in kf.split(activations):
+            fold_scores = []
+            for train_index, test_index in splits:
                 train_acts = activations[train_index, layer]
                 test_acts = activations[test_index, layer]
                 train_labels = labels[train_index]
@@ -68,13 +85,14 @@ def process_layer(args):
                 'preprocess_func': preprocess_func,
                 'n_samples': len(labels),
                 'n_components': n_components,
+                'bootstrap': bootstrap,
                 'k': k,
                 'repetition_id': i,
                 'manifold': manifold,
                 'layer': layer,
                 'target_col': target_col,
                 'reduction_method': reduction_method,
-                'score': float(np.mean(fold_scores)), # TODO: log all fold scores to get error bars
+                'score': float(np.mean(fold_scores)),
                 'fold_scores': fold_scores,
                 'label_col': label_col,
                 'control': control,
