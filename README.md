@@ -11,11 +11,13 @@
   
 </div>
 
-This is the official repository of the paper "_Shape Happens: Automatic Feature Manifold Discovery in LLMs via Supervised Multi-Dimensional Scaling_". It contains our implementation of Supervised Multidimensional Scaling (SMDS), as well as the scripts necessary to record activations, score different manifolds, and some utilities to plot the results.
+This is the official repository of the paper "_Hypothesis-Driven Feature Manifold Analysis in LLMs via Supervised Multi-Dimensional Scaling_" published in TMLR. It contains our implementation of Supervised Multidimensional Scaling (SMDS), as well as the scripts necessary to record activations, score different manifolds, and some utilities to plot the results.
+
+>__NOTE:__ We also offer a [stand-alone implementation of SMDS](https://github.com/UKPLab/supervised-multidimensional-scaling)!
 
 ><details>
 ><summary> <b>Abstract</b> </summary>
->The linear representation hypothesis states that language models (LMs) encode concepts as directions in their latent space, forming organized, multidimensional manifolds. Prior efforts focused on discovering ad-hoc geometries and numerical features, and thus lack generalization for manifold structure discovery. We introduce Supervised Multi-Dimensional Scaling (SMDS), a model-agnostic method to automatically discover feature manifolds. In this paper, we apply it to temporal reasoning as a case study, and find that features form geometric structures such as circles, lines, and clusters. This reveals many insights on these structures: they consistently reflect the properties of the concepts they represent; are stable across model families and sizes; actively support reasoning in models; dynamically reshape in response to context changes. Together, our findings shed light on the functional role of feature manifolds, supporting a model of entity-based reasoning in which LMs encode and transform structured representations.
+>The linear representation hypothesis states that language models (LMs) encode concepts as directions in their latent space, forming organized, multidimensional manifolds. Prior work has largely focused on identifying specific geometries for individual features, limiting its ability to generalize. We introduce Supervised Multi-Dimensional Scaling (SMDS), a model-agnostic method for evaluating and comparing competing feature manifold hypotheses. We apply SMDS to temporal reasoning as a case study and find that different features instantiate distinct geometric structures, including circles, lines, and clusters. SMDS reveals several consistent characteristics of these structures: they reflect the semantic properties of the concepts they represent, remain stable across model families and sizes, actively support reasoning, and dynamically reshape in response to contextual changes. Together, our findings shed light on the functional role of feature manifolds, supporting a model of entity-based reasoning in which LMs encode and transform structured representations.
 ></details></p>
 
 Contact person: [Federico Tiblias](mailto:federico.tiblias@tu-darmstadt.de) 
@@ -64,14 +66,14 @@ python record_interventions.py --config <filename>
 Please use the following citation:
 
 ```
-@misc{tiblias2025shapehappensautomaticfeature,
-      title={Shape Happens: Automatic Feature Manifold Discovery in LLMs via Supervised Multi-Dimensional Scaling}, 
-      author={Federico Tiblias and Irina Bigoulaeva and Jingcheng Niu and Simone Balloccu and Iryna Gurevych},
-      year={2025},
-      eprint={2510.01025},
-      archivePrefix={arXiv},
-      primaryClass={cs.AI},
-      url={https://arxiv.org/abs/2510.01025}, 
+@article{tibliasHypothesisDrivenFeatureManifold2025,
+  title = {Hypothesis-{{Driven Feature Manifold Analysis}} in {{LLMs}} via {{Supervised Multi-Dimensional Scaling}}},
+  author = {Tiblias, Federico and Bigoulaeva, Irina and Niu, Jingcheng and Balloccu, Simone and Gurevych, Iryna},
+  date = {2025-10-21},
+  journaltitle = {Transactions on Machine Learning Research},
+  url = {https://openreview.net/forum?id=vCKZ40YYPr},
+  urldate = {2026-03-03},
+  langid = {english},
 }
 ```
 

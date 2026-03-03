@@ -1,0 +1,40 @@
+global:
+  reduction_method: SMDS
+  k: 5
+  target_columns: null
+  layers: [2, 20] # Known from scoring.yaml best layers
+  max_samples: 500
+  manifold: euclidean
+
+grid:
+  n_components: [3]
+
+local:
+### Non Control Configurations ###
+  - path: results/gemma-2-2b-it/duration_3way.pt
+    label_col: [correct_duration_length, correct_date]
+    preprocess_func: [log, datetime_to_dayofyear]
+
+  - path: results/Llama-3.2-3B-Instruct/duration_3way.pt
+    label_col: [correct_duration_length, correct_date]
+    preprocess_func: [log, datetime_to_dayofyear]
+
+  - path: results/Qwen2.5-3B-Instruct/duration_3way.pt
+    label_col: [correct_duration_length, correct_date]
+    preprocess_func: [log, datetime_to_dayofyear]
+
+### Control Configurations ###
+  - path: results/gemma-2-2b-it/duration_3way.pt
+    label_col: [correct_duration_length, correct_date]
+    preprocess_func: [log, datetime_to_dayofyear]
+    control: true
+
+  - path: results/Llama-3.2-3B-Instruct/duration_3way.pt
+    label_col: [correct_duration_length, correct_date]
+    preprocess_func: [log, datetime_to_dayofyear]
+    control: true
+
+  - path: results/Qwen2.5-3B-Instruct/duration_3way.pt
+    label_col: [correct_duration_length, correct_date]
+    preprocess_func: [log, datetime_to_dayofyear]
+    control: true

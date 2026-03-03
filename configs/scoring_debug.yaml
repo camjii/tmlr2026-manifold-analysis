@@ -1,0 +1,23 @@
+global:
+  reduction_method: SMDS
+  k: 20
+  repetitions: 0
+  target_columns: last_prompt_token
+  layers: null
+  max_samples: 500
+
+grid:
+  n_components: [3]
+  manifold: 
+    - euclidean
+    - cluster
+    - circular
+
+local:
+  #### gemma-2-2b-it ####
+  - path: results/gemma-2-2b/duration_3way.pt
+    label_col: correct_duration_length
+
+  - path: results/gemma-2-2b/date_3way.pt
+    label_col: correct_date
+    preprocess_func: datetime_to_dayofyear

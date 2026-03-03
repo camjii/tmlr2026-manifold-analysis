@@ -1,0 +1,20 @@
+global:
+  delta_token: 0
+  debug: false
+  frac: 1
+  model_name: meta-llama/Llama-3.2-3B-Instruct
+  intervention_layer: 1
+  intervention_type: denoise
+  n_components: 100
+
+local:
+  - dataset: datasets/templates/date_3way.csv
+    label_column: correct_date
+    target_column: correct_date_str
+    preprocess_func: datetime_to_dayofyear
+    manifold: circular
+
+  - dataset: datasets/templates/date_3way_season.csv
+    label_column: correct_season_label
+    target_column: correct_date_str
+    manifold: cluster

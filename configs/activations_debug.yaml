@@ -6,10 +6,23 @@ global:
 
 grid:
   model_name:
-    - gpt2
+    - meta-llama/Llama-3.2-3B
+    - Qwen/Qwen2.5-3B
+    - google/gemma-2-2b
 
 local:
   - datasets:
+    - filename: datasets/templates/date_3way_temperature.csv
+      label_columns: [correct_temperature, correct_temperature_label, correct_date]
+
+    - filename: datasets/templates/time_of_day_3way_phase.csv
+      label_columns: [correct_time, correct_answer, correct_phase, correct_phase_label]
+      extra_columns: [correct_time_expr]
+  
+    - filename: datasets/templates/date_3way_season.csv
+      label_columns: [correct_season, correct_season_label, correct_date]
+      extra_columns: [correct_date_str]
+
     - filename: datasets/templates/date_3way.csv
       label_columns: [correct_date]
       extra_columns: [correct_date_str]
