@@ -33,7 +33,7 @@ Don't hesitate to send us an e-mail or report an issue, if something is broken o
 Simply create a conda environment and install dependencies:
 
   ```bash
-  conda env create -f environment.yml
+  conda env create -f environment.yaml
   conda activate shape-happens
   ```
 
